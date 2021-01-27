@@ -1,70 +1,128 @@
-# Getting Started with Create React App
+### Prop Types
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> PropTypes are development package so they would not cause the performance issues in production mode. Also, it is possible to available `prop-types` provided by React developer teams.
 
-## Available Scripts
+```javascript
+const PropTypes = {
+  string(props, propName, componentName) {
+    const type = typeof props[propName];
+    if (type != string) {
+      return new Error('Hey check the type of props');
+    }
+  },
+};
 
-In the project directory, you can run:
+Message.propTypes = {
+  msg: PropTypes.string,
+  greeting: PropTypes.string,
+};
+```
 
-### `yarn start`
+`SyntheticEvent` is not real event from browser, actually, it's an objecy that React creates for us. Most of the time, you won't be notice that you are working with `SyntheticEvent` or the real `event`, they do this for performance reasons. To access native event you can do `event.nativeEvent`.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```javascript
+/* lesson 23 */
+// 1
+console.dir(event.target);
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+// 2
+<label htmlFor='userNameInput'>user name:</label>
+<input id='userNameInput' />
+console.log(event.target.elements.userNameInput.value);
 
-### `yarn test`
+// 3 :: Do not forget current
+const userNameInputRef = useRef();
+<label ref={userNameInputRef} htmlFor='userNameInput'>user name:</label>
+<input id='userNameInput' />
+console.log(userNameInputRef.current.value)
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> Make sure to provide appropriate `key` for each element/state you are traversing unless you will get quirky behaviours.
 
-### `yarn build`
+## Hooks fundamentals
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+TTP requests are another common side-effect that we need to do in applications. This is no different from the side-effects we need to apply to a rendered DOM or when interacting with browser APIs like localStorage. In all these cases, we do that within a useEffect hook callback. This hook allows us to ensure that whenever certain changes take place, we apply the side-effects based on those changes.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+One important thing to note about the useEffect hook is that you cannot return anything other than the cleanup function. This has interesting implications with regard to async/await syntax:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```javascript
+React.useEffect(() => {
+  async function effect() {
+    const result = await doSomeAsyncThing();
+    // do something with the result
+  }
+  effect();
+});
+```
 
-### `yarn eject`
+```javascript
+fetchPokemon(pokemonName).then(
+  (pokemon) => setPokemon(pokemon),
+  (err) => setError(err),
+);
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+> To cover all the possibility of fetching data,it's advised to have `status` (eg `idle`,`pending`,`resolved` and `rejected`).
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```javascript
+const App = () => {
+  const [status, setStatus] = useState('idle');
+  const [pokemon, setPokemon] = useState(null);
+  useEffect(() => {
+    setStatus('pending');
+    fetchPokemon(pokemonName).then(
+      (pokemon) => {
+        setPokemon(pokemon);
+        setStatus('resolved');
+      },
+      (err) => {
+        setErr(err);
+        setStatus('rejected');
+      },
+    );
+  }, [pokemonName]);
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  if (status === 'idle') {
+  } else if (status === 'pending') {
+  } else if (status === 'resolved') {
+  } else if (status === 'rejected') {
+  }
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+  throw new Error('Impossible to happen');
+};
+```
 
-## Learn More
+**What would happen if the setStatus() comes before setPokemon/setErr?**
+_So, the following piece of code could do the trick._
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```javascript
+const [state, setState] = useState({
+  status: 'idle',
+  pokemon: null,
+  error: null,
+});
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+useEffect(() => {
+  setState({ status: 'pending' });
+  fetchPokemon(pokemonName).then(
+    (pokemon) => {
+      setState({ pokemon: pokemon, status: 'resolved' });
+    },
+    (err) => {
+      setState({ error: err, status: 'rejected' });
+    },
+  );
 
-### Code Splitting
+  if (status === 'idle') {
+  } else if (status === 'pending') {
+  } else if (status === 'resolved') {
+  } else if (status === 'rejected') {
+  }
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+  throw new Error('Impossible to happen');
+}, [pokemonName]);
+```
 
-### Analyzing the Bundle Size
+### `ErrorBoundry`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+> We’ve already solved the problem for errors in our request, we’re only handling that one error. But there are a lot of different kinds of errors that can happen in our applications. No matter how hard you try, eventually your app code just isn’t going to behave the way you expect it to and you’ll need to handle those exceptions. If an error is thrown and unhandled, your application will be removed from the page, leaving the user with a blank screen… Kind of awkward… Luckily for us, there’s a simple way to handle errors in your application using a special kind of component called an [Error Boundary](https://reactjs.org/docs/error-boundaries.html). Unfortunately, there is currently no way to create an Error Boundary component with a function and you have to use a class component instead. In this extra credit, read up on ErrorBoundary components, and try to create one that handles this and any other error for the PokemonInfo component.
