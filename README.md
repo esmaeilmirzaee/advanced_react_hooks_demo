@@ -199,6 +199,8 @@ then `useReducer` over `useState`. Because it is more performant and easy to wor
 
 ![`useReducer` vs `useState`](./src/assets/useReducer_vs_useState.png)
 
-In the following image you can the difference. At first, it might seem complicated but it's so much easier than you think. Practising and using it regulary could help your understanding of it.
+In the following image you can see the difference. At first, it might seem complicated but it's so much easier than you think. Practising and using it regulary could help your understanding of it.
 
 ![`useReducer` vs `useState`](./src/assets/useReducer_vs_useState_2.png)
+
+_One of the simplest usage of `useReducer` could be theme. Applying dark-mode to your web site is a good idea_.
