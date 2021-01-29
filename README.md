@@ -126,3 +126,61 @@ useEffect(() => {
 ### `ErrorBoundry`
 
 > We’ve already solved the problem for errors in our request, we’re only handling that one error. But there are a lot of different kinds of errors that can happen in our applications. No matter how hard you try, eventually your app code just isn’t going to behave the way you expect it to and you’ll need to handle those exceptions. If an error is thrown and unhandled, your application will be removed from the page, leaving the user with a blank screen… Kind of awkward… Luckily for us, there’s a simple way to handle errors in your application using a special kind of component called an [Error Boundary](https://reactjs.org/docs/error-boundaries.html). Unfortunately, there is currently no way to create an Error Boundary component with a function and you have to use a class component instead. In this extra credit, read up on ErrorBoundary components, and try to create one that handles this and any other error for the PokemonInfo component.
+
+```javascript
+class ErrorBoundary extends React.Component {
+  state = { error: null };
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  render() {
+    const { error } = this.state;
+    if (error) {
+      return (
+        <>
+          There was an error:{' '}
+          <pre style={{ whiteSpace: 'normal' }}>{error.message}</pre>
+        </>
+      );
+    }
+    return this.props.children;
+  }
+}
+```
+
+The `ErrorBoundary` could be more generic. **To unmount and remount `ErrorBoundary`(or any component) add key when you are calling the component.**
+
+```javascript
+class ErrorBoundary extends React.Component {
+  state = { error: null };
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  render() {
+    const { error } = this.state;
+    if (error) {
+      return <this.props.FallbackComponent error={error} />;
+    }
+    return this.props.children;
+  }
+}
+
+function FallbackComponent({ error }) {
+  return (
+    <>
+      There was an error:{' '}
+      <pre style={{ whiteSpace: 'normal' }}>{error.message}</pre>
+    </>
+  );
+}
+```
+
+There is `ErrorBoundary` package which can be imported from `react-error-boundary`.
+It is advised to use `ErrorBoundary` in your application.
+
+```javascript
+import { ErrorBoundary } from 'react-error-boundary';
+<ErrorBoundary>
+  <PokemonInfo />
+</ErrorBoundary>;
+```
