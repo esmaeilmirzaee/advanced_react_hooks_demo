@@ -58,7 +58,7 @@ React.useEffect(() => {
 ```javascript
 fetchPokemon(pokemonName).then(
   (pokemon) => setPokemon(pokemon),
-  (err) => setError(err),
+  (err) => setError(err)
 );
 ```
 
@@ -78,7 +78,7 @@ const App = () => {
       (err) => {
         setErr(err);
         setStatus('rejected');
-      },
+      }
     );
   }, [pokemonName]);
 
@@ -110,7 +110,7 @@ useEffect(() => {
     },
     (err) => {
       setState({ error: err, status: 'rejected' });
-    },
+    }
   );
 
   if (status === 'idle') {
@@ -175,8 +175,7 @@ function FallbackComponent({ error }) {
 }
 ```
 
-There is `ErrorBoundary` package which can be imported from `react-error-boundary`.
-It is advised to use `ErrorBoundary` in your application.
+There is `ErrorBoundary` package which can be imported from `react-error-boundary`. It is advised to use `ErrorBoundary` in your application.
 
 ```javascript
 import { ErrorBoundary } from 'react-error-boundary';
@@ -184,3 +183,22 @@ import { ErrorBoundary } from 'react-error-boundary';
   <PokemonInfo />
 </ErrorBoundary>;
 ```
+
+## `useReducer` vs `useState`?
+
+[What React's documentation tells us?](https://reactjs.org/docs/hooks-reference.html#usereducer)
+
+> "_An alternative to `useState`._ `useReducer` is usually prefarable to `useState` when you have **complex state logic** that **involves multiple sub-values**. It also lets you **optimise performance** for components that **trigger deep updates** because you can pass **dispatch down instead of callbacks**."
+
+Simply put, you have
+
+1. complex state/value to manage
+2. you need to trigger deep updates
+
+then `useReducer` over `useState`. Because it is more performant and easy to work with than `useState`.
+
+![`useReducer` vs `useState`](./src/assets/useReducer_vs_useState.png)
+
+In the following image you can the difference. At first, it might seem complicated but it's so much easier than you think. Practising and using it regulary could help your understanding of it.
+
+![`useReducer` vs `useState`](./src/assets/useReducer_vs_useState_2.png)
