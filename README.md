@@ -205,7 +205,9 @@ In the following image you can see the difference. At first, it might seem compl
 
 _One of the simplest usage of `useReducer` could be theme. Applying dark-mode to your web site is a good idea_.
 
-Accepting object as a state.
+---
+
+Accepting an object as a state.
 
 ```javascript
 function countReducer(state, action) {
@@ -217,7 +219,34 @@ function Counter({ step = 1, initialValue = 0 }) {
 
   let { count } = state;
   return (
-    <button value={count} onClick={() => setState({ count: count + step })}>
+    <button onClick={() => setState({ count: count + step })}>{count}</button>
+  );
+}
+```
+
+---
+
+Getting a function or a value as an action for `useReducer`.
+
+```javascript
+function countReducer(state, action) {
+  return {
+    ...state,
+    ...(typeof action === 'function' ? action(state) : action),
+  };
+}
+
+function Counter({ step = 1, initialValue = 0 }) {
+  const [state, setState] = useReducer(countReducer, { count: initialValue });
+
+  let { const } = state;
+
+  return (
+    <button
+      onClick={setState((currentState) => ({
+        count: currentState.count + step,
+      }))}
+    >
       {count}
     </button>
   );
