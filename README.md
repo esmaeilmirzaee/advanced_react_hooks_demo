@@ -204,3 +204,22 @@ In the following image you can see the difference. At first, it might seem compl
 ![`useReducer` vs `useState`](./src/assets/useReducer_vs_useState_2.png)
 
 _One of the simplest usage of `useReducer` could be theme. Applying dark-mode to your web site is a good idea_.
+
+Accepting object as a state.
+
+```javascript
+function countReducer(state, action) {
+  return { ...state, ...action };
+}
+
+function Counter({ step = 1, initialValue = 0 }) {
+  const [state, setState] = useRecuer(countReducer, { count: initialValue });
+
+  let { count } = state;
+  return (
+    <button value={count} onClick={() => setState({ count: count + step })}>
+      {count}
+    </button>
+  );
+}
+```
