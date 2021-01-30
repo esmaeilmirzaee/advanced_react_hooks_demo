@@ -252,3 +252,29 @@ function Counter({ step = 1, initialValue = 0 }) {
   );
 }
 ```
+
+---
+
+`useReducer` with convention of Redux
+
+```javascript
+function countReducer(state, action) {
+  if (action.type === 'INCREMENT') {
+    return { count: state.count + state.step };
+  }
+
+  if (process.env.development) {
+    return new Error(`Unsupported action type: ${action.type}`);
+  } else {
+    return state;
+  }
+}
+function Counter({ initialState = 0, step = 1 }) {
+  const [state, dispatch] = useReducer(countReducer, { count: initialState });
+  return (
+    <button onClick={() => dispatch({ type: 'INCREMENT', step })}>
+      {count}
+    </button>
+  );
+}
+```
