@@ -278,3 +278,7 @@ function Counter({ initialState = 0, step = 1 }) {
   );
 }
 ```
+
+---
+
+`useContext`
